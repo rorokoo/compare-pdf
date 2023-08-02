@@ -25,31 +25,28 @@ async function getAllPdfPairs(path1, path2) {
   return files
 }
 
-function comparePdfs(file1, file2) {
+function comparePdfs(actual, baseline) {
+  let mask_example = [
+    { pageIndex: 0, coordinates: { x0: 177, y0: 163, x1: 640, y1: 226 } },
+  ]
   return (
     new comparePdf()
-      .actualPdfFile(file1)
-      .baselinePdfFile(file2)
-      // .addMask(0, { x0: 35, y0: 70, x1: 145, y1: 95 })
-      // .cropPage(0, { width: 467, height: 368, x: 223, y: 300 })
-      // .onlyPageIndexes([1])
-      // .skipPageIndexes([0])
+
+      .actualPdfFile(actual)
+      .baselinePdfFile(baseline)
+      // .addMasks(mask_example)
       .compare()
       .then((result) => {
-        return result
+        console.log({ actual, baseline, ...result })
       })
       .catch((err) => console.log(err))
   )
 }
 
-// finds all pdfs with the same name from 'actualPdfs' folder and 'baselinePdfs' and compares them.
 async function compareAllPairs() {
   const files = await getAllPdfPairs('./data/actualPdfs', './data/baselinePdfs')
-
   files.forEach((file) => {
-    comparePdfs(file, file).then((result) =>
-      console.log({ file: file, ...result })
-    )
+    comparePdfs(file, file)
   })
 }
 
